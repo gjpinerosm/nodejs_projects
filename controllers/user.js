@@ -8,7 +8,7 @@ function pruebas(req, res){
     res.status(200).send({message: 'Probando una acción del controlador de usuarios del API Rest con node'});
 }
 
-// Create user object
+// Create function for  user object
 function saveUser(req, res){
     var user = new User();
 
@@ -48,7 +48,43 @@ function saveUser(req, res){
     }
 }
 
+function loginUser(req,res){
+    // params response
+    var params = req.body;
+    // access property object params
+    console.log(params);
+    var email = params.email;
+    var password = params.password;
+
+    //console.log('El valor USER es: '+User);
+    User.findOne({email: email.toLowerCase()},(err,user) => {  // This user is the object user
+    //console.log('El valor de user es: ' + user);    
+    if(err){
+            res.status(500).send({message: 'Error en la peticion'});
+        } else {
+            if(!user){
+                res.status(404).send({message: 'El usuario no existe'});
+            } else{
+                // Verify password
+                bcrypt.compare(password,user.password, function(err,check){
+                    if(check){
+                        // return user data loged
+                        if(params.gethash){
+                            //return over http jwt token
+                        }else{
+                            res.status(200).send({user}); // response in the user object 
+                        }
+                    } else{
+                        res.status(404).send({message: 'El usuario no ha podido loguearse'});
+                    }
+                });
+            }
+        }
+    });
+}
+
 module.exports = {
     pruebas,
-    saveUser
+    saveUser,
+    loginUser
 };
