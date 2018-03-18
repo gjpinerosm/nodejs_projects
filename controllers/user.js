@@ -1,7 +1,10 @@
+//import { createToken } from '../services/jwt';
+
 'use strict'
 
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
+var jwt = require('../services/jwt');
 
 // Create first method
 function pruebas(req, res){
@@ -68,9 +71,10 @@ function loginUser(req,res){
                 // Verify password
                 bcrypt.compare(password,user.password, function(err,check){
                     if(check){
-                        // return user data loged
+                        // return user data when user is logged in
                         if(params.gethash){
                             //return over http jwt token
+                            res.status(200).send({token: jwt.createToken(user)});
                         }else{
                             res.status(200).send({user}); // response in the user object 
                         }
