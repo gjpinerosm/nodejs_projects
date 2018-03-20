@@ -73,6 +73,7 @@ function loginUser(req,res){
                     if(check){
                         // return user data when user is logged in
                         if(params.gethash){
+                            console.log(params.gethash);
                             //return over http jwt token
                             res.status(200).send({token: jwt.createToken(user)});
                         }else{
@@ -87,8 +88,58 @@ function loginUser(req,res){
     });
 }
 
+function updateUser(req,res){
+    var userId = req.params.id;
+    var update = req.body;
+
+    User.findByIdAndUpdate(userId, update, (err,userUpdate) => {  // It has: One parameter what is userId and body object update
+        if(err){
+            res.status(500).send({message:'Error al actualizar el usuario: '+userId});
+        } else{
+            if(!userUpdate){
+                res.status(400).send({message:'No se ha podido actualizar el usuario'});
+            } else{
+                res.status(200).send({user: userUpdate});
+            }
+        }
+    });
+}
+
+function uploadImage(req,res){
+    var userId = req.params.id;
+    var file_name_message = 'No ha subido el archivo...';
+
+    if (req.files) {
+        var file_path = req.files.image.path;
+        var file_split = file_path.split('/');
+        var file_name = file_split[2];
+        var ext_split = file_name.split('.');
+        var file_ext = ext_split[1];
+        
+        console.log(file_path);
+        console.log(file_split);
+        console.log(ext_split);
+
+        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif') {
+            User.findByIdAndUpdate(userId,{image: file_name},(err,userUpdate) => {
+                if(!userUpdate){
+                    res.status(400).send({message:'No se ha podido actualizar el usuario'});
+                } else{
+                    res.status(200).send({user: userUpdate});
+                }
+            });
+        } else {
+            res.status(200).send({message: 'Extension del archivo de imagen no es válida'});
+        }
+    } else{
+        res.status(200).send({message: 'No se ha subido ninguna imagen'});
+    }
+}
+
 module.exports = {
     pruebas,
     saveUser,
-    loginUser
-};
+    loginUser,
+    updateUser,
+    uploadImage
+};  
