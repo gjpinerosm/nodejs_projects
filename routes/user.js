@@ -13,5 +13,6 @@ api.post('/register',UserController.saveUser);
 api.post('/login',UserController.loginUser);
 api.put('/update-user/:id', middleware_auth.ensureAuth, UserController.updateUser);
 api.post('/upload-image-user/:id', [middleware_auth.ensureAuth,md_upload], UserController.uploadImage);
+api.get('/upload-image-user/:imageFile',UserController.getImageFile);
 
 module.exports = api;
